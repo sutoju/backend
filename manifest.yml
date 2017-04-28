@@ -4,6 +4,7 @@ applications:
   instances: 1
   domain: eu-gb.mybluemix.net
   name: sutoju-backend
+  command: npm start
   host: sutoju-backend
   disk_quota: 1024M
   services:

@@ -3,7 +3,7 @@ import fs from 'fs';
 import { logger } from '../utils/logger';
 
 // Database configuration
-const dbName = 'asdasd';
+const dbName = 'weights-data';
 let dbUrl;
 
 function getDbUrl(jsonData) {
@@ -64,7 +64,8 @@ export function getData() {
         }
         const filtered = docs.rows
           // FIXMID FILTER .filter(...)
-          .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight }));
+          .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight, diff: d.doc.diff }))
+          .sort((a, b) => a.timestamp - b.timestamp);
         logger.info(`docs: ${JSON.stringify(filtered, null, 2)}`);
         resolve(filtered);
       });
@@ -84,8 +85,9 @@ export function getDataBetween(startTime, endTime) {
           resolve([]);
         }
         const filtered = docs.rows
-          .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight }))
-          .filter(d => d.timestamp > startTime && d.timestamp < endTime);
+          .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight, diff: d.doc.diff }))
+          .filter(d => d.timestamp > startTime && d.timestamp < endTime)
+          .sort((a, b) => a.timestamp - b.timestamp);
         logger.info(`docs: ${JSON.stringify(filtered, null, 2)}`);
         resolve(filtered);
       });

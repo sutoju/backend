@@ -8,7 +8,7 @@ import { getData, getDataBetween } from './db/index';
 logger.info(getData);
 
 const app = express();
-const port = 3000;
+const port = process.env.VCAP_APP_PORT || 3000;
 
 
 app
