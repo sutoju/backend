@@ -195,10 +195,7 @@ export function deleteFood(item) {
   return new Promise((resolve, reject) => {
     fetch('https://sutoju-logic.eu-gb.mybluemix.net/removeItem', {
       method: 'POST',
-      body: JSON.stringify({
-        _id: item._id,
-        _rev: item._rev,
-      }),
+      body: JSON.stringify(item),
     })
     .then((res) => {
       resolve(item);
