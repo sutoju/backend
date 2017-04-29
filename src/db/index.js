@@ -19,6 +19,48 @@ function getDbUrl(jsonData) {
   return '';
 }
 
+function initWeights() {
+  const initialWeights = [{ difference: 110, weight: 110, time: 1493321513 }, { difference: 150, weight: 260, time: 1493364713 }, { difference: 50, weight: 310, time: 1493386313 }, { difference: 76, weight: 386, time: 1493429513 }, { difference: 200, weight: 586, time: 1493443913 }, { difference: 30, weight: 30, time: 1493469113 }];
+  initialWeights.forEach((val) => {
+    fetch('https://sutoju-logic.eu-gb.mybluemix.net/initWeight', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        time: val.time,
+        weight: val.weight,
+        difference: val.difference,
+      }),
+    });
+  });
+}
+
+function initItems() {
+  const now = Math.floor(Date.now());
+  const applePrototype = { type: 'apple', added: now - (24 * 3600), expires: now + (48 * 3600) };
+  const ricePrototype = { type: 'rice', added: now - (240 * 3600), expires: now + (170 * 3600) };
+  const honeyPrototype = { type: 'honey', added: now - (120 * 3600), expires: now + (320 * 3600) };
+  const addItem = (body) => {
+    fetch('https://sutoju-logic.eu-gb.mybluemix.net/initItem', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+  };
+  addItem(applePrototype);
+  addItem(applePrototype);
+  addItem(applePrototype);
+  addItem(applePrototype);
+  addItem(applePrototype);
+  addItem(ricePrototype);
+  addItem(ricePrototype);
+  addItem(ricePrototype);
+  addItem(honeyPrototype);
+}
+
 if (process.env.VCAP_SERVICES) { // IBM bluemix host
   dbUrl = getDbUrl(process.env.VCAP_SERVICES);
 } else { // Local host
@@ -32,6 +74,7 @@ cloudant.db.create(weightDbName, (err) => {
     logger.info(`Could not create db ${weightDbName} - does it already exist?`);
   } else {
     logger.info(`Database initialized: ${weightDbName}`);
+    initWeights();
   }
 });
 cloudant.db.create(foodDbName, (err) => {
@@ -39,6 +82,7 @@ cloudant.db.create(foodDbName, (err) => {
     logger.info(`Could not create db ${foodDbName} - does it already exist?`);
   } else {
     logger.info(`Database initialized: ${foodDbName}`);
+    initItems();
   }
 });
 

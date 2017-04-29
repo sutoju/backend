@@ -2,7 +2,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
-import fetch from 'node-fetch';
 import { logger, logStream } from './utils/logger';
 import { getWeightData,
   getWeightDataBetween,
@@ -92,23 +91,6 @@ app
       res.json(deletedItem);
     });
   });
-})
-.get('/initWeights', (req, res) => {
-  const initialWeights = [{ difference: 110, weight: 110, time: 1493321513 }, { difference: 150, weight: 260, time: 1493364713 }, { difference: 50, weight: 310, time: 1493386313 }, { difference: 76, weight: 386, time: 1493429513 }, { difference: 200, weight: 586, time: 1493443913 }, { difference: 30, weight: 30, time: 1493469113 }];
-  initialWeights.forEach((val) => {
-    fetch('https://sutoju-logic.eu-gb.mybluemix.net/initWeight', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        time: val.time,
-        weight: val.weight,
-        difference: val.difference,
-      }),
-    });
-  });
-  res.json({ status: 'ok' });
 });
 
 app.listen(port, () => logger.info(`server running on ${port}`));
