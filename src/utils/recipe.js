@@ -20,7 +20,8 @@ export function searchRecipes(items) {
       image_url: i.image_url,
       recipe_id: i.recipe_id,
     })),
-  }));
+  }))
+  .catch(() => ({ error: 'limit' }));
 }
 
 export function getRecipe(id) {
