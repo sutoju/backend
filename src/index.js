@@ -59,7 +59,6 @@ app
 .delete('/food/:type', (req, res) => {
   getOldestFood(req.params.type)
   .then((foodItem) => {
-    logger.info('oldest: ', foodItem);
     deleteFood(foodItem)
     .then((deletedItem) => {
       res.json(deletedItem);

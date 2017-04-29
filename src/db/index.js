@@ -1,5 +1,6 @@
 import Cloudant from 'cloudant';
 import fs from 'fs';
+import fetch from 'node-fetch';
 import { logger } from '../utils/logger';
 
 /* Database configuration */
@@ -44,6 +45,16 @@ cloudant.db.create(foodDbName, (err) => {
 // Use proper database
 const weightDb = cloudant.use(weightDbName);
 const foodDb = cloudant.use(foodDbName);
+/*
+const foodIndex = { name: 'type', type: 'json', index: { fields: ['type'] } };
+foodDb.index(foodIndex, (err, response) => {
+  if (err) {
+    logger.info(`Could not index db ${foodDbName} - does it already exist?`);
+  } else {
+    logger.info(`Database initialized: ${foodDbName}`);
+  }
+})
+*/
 /*
 weightDb.list((err, allDbs) => {
   const dbstring = JSON.stringify(allDbs, null, 2);
@@ -140,6 +151,13 @@ export function getOldestFood(type) {
         }
         // Find foods of given type
         const filtered = docs.rows
+          .map(d => ({
+            _id: d.doc._id,
+            _rev: d.doc._rev,
+            type: d.doc.type,
+            added: d.doc.added,
+            expires: d.doc.expires,
+          }))
           .filter(d => d.type && d.added && d.expires && d.type === type);
         if (filtered.length === 0) {
           resolve({});
@@ -159,13 +177,19 @@ export function getOldestFood(type) {
 
 export function deleteFood(item) {
   return new Promise((resolve, reject) => {
-    if (foodDb) {
-      foodDb.fetch({}, (err, docs) => {
-        if (err) {
-          reject(err);
-        }
-      });
-    }
+    fetch('https://sutoju-logic.eu-gb.mybluemix.net/removeItem', {
+      method: 'POST',
+      body: JSON.stringify({
+        _id: item._id,
+        _rev: item._rev,
+      }),
+    })
+    .then((res) => {
+      resolve(item);
+    })
+    .catch((err) => {
+      reject(err);
+    });
   });
 }
 
@@ -182,7 +206,6 @@ export function getWeightData() {
         if (docs.rows.length === 0) {
           resolve([]);
         }
-        logger.info(JSON.stringify(docs.rows, null, 2));
         const filtered = docs.rows
           .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight, difference: d.doc.difference }))
           .sort((a, b) => a.timestamp - b.timestamp);
@@ -193,7 +216,6 @@ export function getWeightData() {
 }
 
 export function getWeightDataBetween(startTime, endTime) {
-  logger.info(`getDataBetween ${startTime} - ${endTime}`);
   return new Promise((resolve, reject) => {
     if (weightDb) {
       weightDb.fetch({}, (err, docs) => {
@@ -207,7 +229,6 @@ export function getWeightDataBetween(startTime, endTime) {
           .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight, difference: d.doc.difference }))
           .filter(d => d.timestamp > startTime && d.timestamp < endTime && d.weight > 0)
           .sort((a, b) => a.timestamp - b.timestamp);
-        logger.info(`docs: ${JSON.stringify(filtered, null, 2)}`);
         resolve(filtered);
       });
     }
