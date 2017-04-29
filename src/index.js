@@ -72,6 +72,7 @@ app
 // Post new food item
 .post('/food/:type', (req, res) => {
   if (req.body.password !== process.env.SUTOJUPASSWORD) {
+    logger.info('failed auth', req.body.password);
     return res.status(403).json({ error: 'Invalid password for data modification.' });
   }
   return addFood(req.params.type)
@@ -80,6 +81,7 @@ app
 // Delete existing food item
 .delete('/food/:type', (req, res) => {
   if (req.body.password !== process.env.SUTOJUPASSWORD) {
+    logger.info('failed auth', req.body.password);
     return res.status(403).json({ error: 'Invalid password for data modification.' });
   }
   return getOldestFood(req.params.type)
