@@ -10,6 +10,7 @@ import { getWeightData,
   getOldestFood,
   deleteFood,
 } from './db/index';
+import { searchRecipes, getRecipe } from './utils/recipe';
 
 const app = express();
 const port = process.env.VCAP_APP_PORT || 3000;
@@ -65,11 +66,21 @@ app
     });
   });
 })
-.get('/recipe', (req, res) => {
+.get('/recipes', (req, res) => {
   sortedFood()
   .then((data) => {
-    console.log(data);
-    res.json({});
+    const items = data.slice(0, 2)
+    .map(i => i.type);
+    searchRecipes(items)
+    .then((recipes) => {
+      res.json(recipes);
+    });
+  });
+})
+.get('/recipes/:id', (req, res) => {
+  getRecipe(req.params.id)
+  .then((recipes) => {
+    res.json(recipes);
   });
 });
 

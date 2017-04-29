@@ -46,7 +46,7 @@ export function getRecipe(id) {
       ingredients: res.recipe ? res.recipe.ingredients : [],
     }));
 }
-
+/*
 searchRecipes(['banana', 'apple', 'pork']).then((items) => {
   console.log(items);
 });
@@ -54,4 +54,5 @@ searchRecipes(['banana', 'apple', 'pork']).then((items) => {
 
 getRecipe('43747').then((res) => {
   console.log(res);
-});
+});*/
+
