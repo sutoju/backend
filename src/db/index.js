@@ -67,7 +67,14 @@ export function getFoodData() {
         }
         const filtered = docs.rows
           // FIXMID FILTER .filter(...)
-          .map(d => ({ type: d.doc.type, added: d.doc.added, expires: d.doc.expires }))
+          .map(d => ({
+            id: d.doc._id,
+            rev: d.doc._rev,
+            type: d.doc.type,
+            added: d.doc.added,
+            expires: d.doc.expires,
+          }))
+          .filter(d => d.type && d.added && d.expires)
           .sort((a, b) => a.expires - b.expires);
         resolve(filtered);
       });
