@@ -88,8 +88,11 @@ function grouped(list) {
     const mapItem = array.find(r => r.type === key);
     if (mapItem) {
       mapItem.count += 1;
+      if (mapItem.expires > item.expires) {
+        mapItem.expores = item.expires;
+      }
     } else {
-      array.push({ type: key, count: 1 });
+      array.push({ type: key, count: 1, expires: item.expires });
     }
   });
   return array;
