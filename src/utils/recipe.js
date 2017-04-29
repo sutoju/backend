@@ -13,22 +13,14 @@ export function searchRecipes(items) {
   const url = urlBase + querystring.stringify(params);
 
   return fetch(url)
-    .then(res => res.json())
-    .then((res) => {
-      const recipes = res.recipes;
-
-      if (recipes) {
-        return {
-          recipes: recipes.map(i => ({
-            title: i.title,
-            image_url: i.image_url,
-            recipe_id: i.recipe_id,
-          })),
-        };
-      }
-
-      return { recipes: [] };
-    });
+  .then(res => res.json())
+  .then(res => ({
+    recipes: res.recipes.map(i => ({
+      title: i.title,
+      image_url: i.image_url,
+      recipe_id: i.recipe_id,
+    })),
+  }));
 }
 
 export function getRecipe(id) {
@@ -41,10 +33,10 @@ export function getRecipe(id) {
   const url = urlBase + querystring.stringify(params);
 
   return fetch(url)
-    .then(res => res.json())
-    .then(res => ({
-      ingredients: res.recipe ? res.recipe.ingredients : [],
-    }));
+  .then(res => res.json())
+  .then(res => ({
+    ingredients: res.recipe ? res.recipe.ingredients : [],
+  }));
 }
 /*
 searchRecipes(['banana', 'apple', 'pork']).then((items) => {
