@@ -3,9 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
 import { logger, logStream } from './utils/logger';
-import { getData, getDataBetween } from './db/index';
-
-logger.info(getData);
+import { getWeightData, getWeightDataBetween, getFoodData } from './db/index';
 
 const app = express();
 const port = process.env.VCAP_APP_PORT || 3000;
@@ -21,9 +19,8 @@ app
 })
 .get('/weightData', (req, res) => {
   // Fetch all data
-  getData()
+  getWeightData()
   .then((data) => {
-    logger.info('/weightData', data);
     res.json(data);
   });
 })
@@ -36,10 +33,15 @@ app
     return res.status(400).json({ error: 'startTime and/or endTime parameters invalid' });
   }
   // Fetch data between given time
-  return getDataBetween(startTime, endTime)
+  return getWeightDataBetween(startTime, endTime)
   .then((data) => {
-    logger.info('/weightData', data);
     return res.json(data);
+  });
+})
+.get('/foodData', (req, res) => {
+  getFoodData()
+  .then((data) => {
+    res.json(data);
   });
 });
 
