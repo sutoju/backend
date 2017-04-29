@@ -174,6 +174,22 @@ export function getOldestFood(type) {
     }
   });
 }
+export function addFood(item) {
+  return new Promise((resolve, reject) => {
+    fetch('https://sutoju-logic.eu-gb.mybluemix.net/submitItem', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: item,
+      }),
+    })
+    .then((res) => {
+      resolve({ added: item });
+    })
+    .catch((err) => {
+      reject(err);
+    });
+  });
+}
 
 export function deleteFood(item) {
   return new Promise((resolve, reject) => {

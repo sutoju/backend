@@ -8,6 +8,7 @@ import { getWeightData,
   getFoodData,
   sortedFood,
   getOldestFood,
+  addFood,
   deleteFood,
 } from './db/index';
 import { searchRecipes, getRecipe } from './utils/recipe';
@@ -21,16 +22,14 @@ app
 .use(morgan('dev', { stream: logStream }))
 .use(bodyParser.json())
 .use(bodyParser.urlencoded({ extended: false }))
-.get('/', (req, res) => {
-  res.json({ status: 'up' });
-})
+// Show status
+.get('/', (req, res) => res.json({ status: 'up' }))
+// Fetch all weight data
 .get('/weightData', (req, res) => {
-  // Fetch all data
   getWeightData()
-  .then((data) => {
-    res.json(data);
-  });
+  .then(data => res.json(data));
 })
+// Fetch weight data between start and end times
 .get('/weightDataBetween', (req, res) => {
   logger.info(req.query);
   const startTime = parseInt(req.query.start, 10);
@@ -41,22 +40,24 @@ app
   }
   // Fetch data between given time
   return getWeightDataBetween(startTime, endTime)
-  .then((data) => {
-    return res.json(data);
-  });
+  .then(data => res.json(data));
 })
+// Fetch all food data
 .get('/foodData', (req, res) => {
   getFoodData()
-  .then((data) => {
-    res.json(data);
-  });
+  .then(data => res.json(data));
 })
+// Fetch sorted food data by expiry date
 .get('/sortedFood', (req, res) => {
   sortedFood()
-  .then((data) => {
-    res.json(data);
-  });
+  .then(data => res.json(data));
 })
+// Post new food item
+.post('/food/:type', (req, res) => {
+  addFood(req.params.type)
+  .then(foodItem => res.json(foodItem));
+})
+// Delete existing food item
 .delete('/food/:type', (req, res) => {
   getOldestFood(req.params.type)
   .then((foodItem) => {
@@ -66,6 +67,7 @@ app
     });
   });
 })
+// Fetch all recipes for the soon-to-expire food items
 .get('/recipes', (req, res) => {
   sortedFood()
   .then((data) => {
@@ -77,11 +79,10 @@ app
     });
   });
 })
+// Fetch the detailed information for a recipe
 .get('/recipes/:id', (req, res) => {
   getRecipe(req.params.id)
-  .then((recipes) => {
-    res.json(recipes);
-  });
+  .then(recipes => res.json(recipes));
 });
 
 app.listen(port, () => logger.info(`server running on ${port}`));
