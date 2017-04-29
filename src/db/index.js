@@ -28,7 +28,7 @@ export function initWeights() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        time: val.time,
+        timestamp: val.time,
         weight: val.weight,
         difference: val.difference,
       }),
@@ -37,7 +37,7 @@ export function initWeights() {
 }
 
 export function initItems() {
-  const now = Math.floor(Date.now() / 1000);
+  const now = Math.floor(Date.now() / 1000.0);
   const applePrototype = { type: 'apple', added: now - (24 * 3600), expires: now + (48 * 3600) };
   const ricePrototype = { type: 'rice', added: now - (240 * 3600), expires: now + (170 * 3600) };
   const honeyPrototype = { type: 'honey', added: now - (120 * 3600), expires: now + (320 * 3600) };
