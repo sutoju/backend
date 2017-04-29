@@ -52,21 +52,6 @@ app
   sortedFood()
   .then(data => res.json(data));
 })
-// Post new food item
-.post('/food/:type', (req, res) => {
-  addFood(req.params.type)
-  .then(foodItem => res.json(foodItem));
-})
-// Delete existing food item
-.delete('/food/:type', (req, res) => {
-  getOldestFood(req.params.type)
-  .then((foodItem) => {
-    deleteFood(foodItem)
-    .then((deletedItem) => {
-      res.json(deletedItem);
-    });
-  });
-})
 // Fetch all recipes for the soon-to-expire food items
 .get('/recipes', (req, res) => {
   sortedFood()
@@ -83,6 +68,27 @@ app
 .get('/recipes/:id', (req, res) => {
   getRecipe(req.params.id)
   .then(recipes => res.json(recipes));
+})
+// Post new food item
+.post('/food/:type', (req, res) => {
+  if (req.body.password !== process.env.SUTOJUPASSWORD) {
+    return res.status(403).json({ error: 'Invalid password for data modification.' });
+  }
+  return addFood(req.params.type)
+  .then(foodItem => res.json(foodItem));
+})
+// Delete existing food item
+.delete('/food/:type', (req, res) => {
+  if (req.body.password !== process.env.SUTOJUPASSWORD) {
+    return res.status(403).json({ error: 'Invalid password for data modification.' });
+  }
+  return getOldestFood(req.params.type)
+  .then((foodItem) => {
+    deleteFood(foodItem)
+    .then((deletedItem) => {
+      res.json(deletedItem);
+    });
+  });
 });
 
 app.listen(port, () => logger.info(`server running on ${port}`));
