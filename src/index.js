@@ -64,6 +64,13 @@ app
       res.json(deletedItem);
     });
   });
+})
+.get('/recipe', (req, res) => {
+  sortedFood()
+  .then((data) => {
+    console.log(data);
+    res.json({});
+  });
 });
 
 app.listen(port, () => logger.info(`server running on ${port}`));
