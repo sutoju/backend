@@ -68,8 +68,8 @@ export function getFoodData() {
         const filtered = docs.rows
           // FIXMID FILTER .filter(...)
           .map(d => ({
-            id: d.doc._id,
-            rev: d.doc._rev,
+            _id: d.doc._id,
+            _rev: d.doc._rev,
             type: d.doc.type,
             added: d.doc.added,
             expires: d.doc.expires,
