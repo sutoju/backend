@@ -19,7 +19,7 @@ function getDbUrl(jsonData) {
   return '';
 }
 
-function initWeights() {
+export function initWeights() {
   const initialWeights = [{ difference: 110, weight: 110, time: 1493321513 }, { difference: 150, weight: 260, time: 1493364713 }, { difference: 50, weight: 310, time: 1493386313 }, { difference: 76, weight: 386, time: 1493429513 }, { difference: 200, weight: 586, time: 1493443913 }, { difference: 30, weight: 30, time: 1493469113 }];
   initialWeights.forEach((val) => {
     fetch('https://sutoju-logic.eu-gb.mybluemix.net/initWeight', {
@@ -36,8 +36,8 @@ function initWeights() {
   });
 }
 
-function initItems() {
-  const now = Math.floor(Date.now());
+export function initItems() {
+  const now = Math.floor(Date.now() / 1000);
   const applePrototype = { type: 'apple', added: now - (24 * 3600), expires: now + (48 * 3600) };
   const ricePrototype = { type: 'rice', added: now - (240 * 3600), expires: now + (170 * 3600) };
   const honeyPrototype = { type: 'honey', added: now - (120 * 3600), expires: now + (320 * 3600) };
