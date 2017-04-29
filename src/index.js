@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
 import { logger, logStream } from './utils/logger';
-import { getWeightData, getWeightDataBetween, getFoodData } from './db/index';
+import { getWeightData, getWeightDataBetween, getFoodData, sortedFood } from './db/index';
 
 const app = express();
 const port = process.env.VCAP_APP_PORT || 3000;
@@ -40,6 +40,12 @@ app
 })
 .get('/foodData', (req, res) => {
   getFoodData()
+  .then((data) => {
+    res.json(data);
+  });
+})
+.get('/sortedFood', (req, res) => {
+  sortedFood()
   .then((data) => {
     res.json(data);
   });

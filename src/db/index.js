@@ -66,7 +66,6 @@ export function getFoodData() {
           resolve([]);
         }
         const filtered = docs.rows
-          // FIXMID FILTER .filter(...)
           .map(d => ({
             _id: d.doc._id,
             _rev: d.doc._rev,
@@ -82,6 +81,46 @@ export function getFoodData() {
   });
 }
 
+function grouped(list) {
+  const array = [];
+  list.forEach((item) => {
+    const key = item.type;
+    const mapItem = array.find(r => r.type === key);
+    if (mapItem) {
+      mapItem.count += 1;
+    } else {
+      array.push({ type: key, count: 1 });
+    }
+  });
+  return array;
+}
+
+export function sortedFood() {
+  return new Promise((resolve, reject) => {
+    if (foodDb) {
+      foodDb.fetch({}, (err, docs) => {
+        if (err) {
+          reject(err);
+        }
+        if (docs.rows.length === 0) {
+          resolve([]);
+        }
+        const filtered = docs.rows
+          .map(d => ({
+            _id: d.doc._id,
+            _rev: d.doc._rev,
+            type: d.doc.type,
+            added: d.doc.added,
+            expires: d.doc.expires,
+          }))
+          .filter(d => d.type && d.added && d.expires)
+          .sort((a, b) => a.expires - b.expires);
+        const sorted = grouped(filtered);
+        resolve(sorted);
+      });
+    }
+  });
+}
 export function getWeightData() {
   return new Promise((resolve, reject) => {
     if (weightDb) {
@@ -94,10 +133,8 @@ export function getWeightData() {
         }
         logger.info(JSON.stringify(docs.rows, null, 2));
         const filtered = docs.rows
-          // FIXMID FILTER .filter(...)
           .map(d => ({ timestamp: d.doc.timestamp, weight: d.doc.weight, difference: d.doc.difference }))
           .sort((a, b) => a.timestamp - b.timestamp);
-        //logger.info(`docs: ${JSON.stringify(filtered, null, 2)}`);
         resolve(filtered);
       });
     }
