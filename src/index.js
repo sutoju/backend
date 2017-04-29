@@ -3,7 +3,13 @@ import cors from 'cors';
 import express from 'express';
 import morgan from 'morgan';
 import { logger, logStream } from './utils/logger';
-import { getWeightData, getWeightDataBetween, getFoodData, sortedFood } from './db/index';
+import { getWeightData,
+  getWeightDataBetween,
+  getFoodData,
+  sortedFood,
+  getOldestFood,
+  deleteFood,
+} from './db/index';
 
 const app = express();
 const port = process.env.VCAP_APP_PORT || 3000;
@@ -48,6 +54,16 @@ app
   sortedFood()
   .then((data) => {
     res.json(data);
+  });
+})
+.delete('/food/:type', (req, res) => {
+  getOldestFood(req.params.type)
+  .then((foodItem) => {
+    logger.info('oldest: ', foodItem);
+    deleteFood(foodItem)
+    .then((deletedItem) => {
+      res.json(deletedItem);
+    });
   });
 });
 

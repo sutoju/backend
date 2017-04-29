@@ -2,7 +2,7 @@ import Cloudant from 'cloudant';
 import fs from 'fs';
 import { logger } from '../utils/logger';
 
-// Database configuration
+/* Database configuration */
 const weightDbName = 'weights-data';
 const foodDbName = 'food-data';
 let dbUrl;
@@ -55,6 +55,9 @@ foodDb.list((err, allDbs) => {
 });
 */
 
+// TODO refactor to another files
+/* FOOD STUFF */
+
 export function getFoodData() {
   return new Promise((resolve, reject) => {
     if (foodDb) {
@@ -89,7 +92,7 @@ function grouped(list) {
     if (mapItem) {
       mapItem.count += 1;
       if (mapItem.expires > item.expires) {
-        mapItem.expores = item.expires;
+        mapItem.expires = item.expires;
       }
     } else {
       array.push({ type: key, count: 1, expires: item.expires });
@@ -124,6 +127,51 @@ export function sortedFood() {
     }
   });
 }
+
+export function getOldestFood(type) {
+  return new Promise((resolve, reject) => {
+    if (foodDb) {
+      foodDb.fetch({}, (err, docs) => {
+        if (err) {
+          reject(err);
+        }
+        if (docs.rows.length === 0) {
+          resolve({});
+        }
+        // Find foods of given type
+        const filtered = docs.rows
+          .filter(d => d.type && d.added && d.expires && d.type === type);
+        if (filtered.length === 0) {
+          resolve({});
+        }
+        // Get food with smallest expiration date
+        let oldest = filtered[0];
+        filtered.forEach((item) => {
+          if (item.expires < oldest.expires) {
+            oldest = item;
+          }
+        });
+        resolve(oldest);
+      });
+    }
+  });
+}
+
+export function deleteFood(item) {
+  return new Promise((resolve, reject) => {
+    if (foodDb) {
+      foodDb.fetch({}, (err, docs) => {
+        if (err) {
+          reject(err);
+        }
+      });
+    }
+  });
+}
+
+
+/* WEIGHT STUFF */
+
 export function getWeightData() {
   return new Promise((resolve, reject) => {
     if (weightDb) {
